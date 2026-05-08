@@ -29,7 +29,14 @@ def create_vector_store(name: str) -> str:
     client = get_client()
 
     vector_store = client.vector_stores.create(
-        name=name, chunking_strategy={"type": "auto"}
+        name=name,
+        chunking_strategy={
+            "type": "static",
+            "static": {
+                "max_chunk_size_tokens": 500,
+                "chunk_overlap_tokens": 100,
+            },
+        },
     )
     logger.info(f"📦 Vector Store created: {vector_store.id}  (name='{name}')")
     return vector_store.id
@@ -57,7 +64,7 @@ def attach_files_to_vector_store(vector_store_id: str, file_ids: list[str]):
             f"Batch {i // BATCH_SIZE + 1}: completed={completed}, failed={failed}"
         )
 
-    logger.info(f"✅ Total completed: {total_completed}, failed: {total_failed}")
+    logger.info(f"Total completed: {total_completed}, failed: {total_failed}")
 
     return total_completed, total_failed
 

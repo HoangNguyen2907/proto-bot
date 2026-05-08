@@ -51,55 +51,78 @@ def fetch_articles():
 
 
 def article_to_markdown(article):
-    body = article.get("body", "")
-    title = article.get("title", "")
+    body_html = article.get("body") or ""
+    title = article.get("title", "Untitled Article")
     url = article.get("html_url", "")
 
-    soup = BeautifulSoup(body, "html.parser")
+    if not body_html:
+        return ""
 
-    for element in soup.select(
-        "nav, header, footer, aside, script, style, ins, svg, form, img, iframe, .ads, .advertisement, #sidebar"
-    ):
-        element.decompose()
+    soup = BeautifulSoup(body_html, "html.parser")
 
-    clean_html = str(soup.find("article") or soup.find("main") or soup)
-    markdown = md(clean_html, heading_style="ATX")
+    # 1. Loại bỏ các thành phần gây nhiễu (Nav, Ads, Social Media, Scripts)
+    trash_selectors = [
+        "nav",
+        "header",
+        "footer",
+        "aside",
+        "script",
+        "style",
+        "ins",
+        "svg",
+        "form",
+        ".ads",
+        ".advertisement",
+        ".article-sidebar",
+        ".article-subscribe",
+        ".article-votes",
+        ".article-comments",
+        ".article-rel-container",
+        ".article-author",
+    ]
+    for selector in trash_selectors:
+        for element in soup.select(selector):
+            element.decompose()
 
-    lines = [line.strip() for line in markdown.splitlines()]
+    clean_markdown = md(
+        str(soup),
+        heading_style="ATX",
+        bullets="*",
+        strip=["img"],
+    )
 
-    compact_lines = []
+    clean_markdown = re.sub(r"\[([^\]]+)\]\(\#[^\)]+\)", r"\1", clean_markdown)
 
-    previous_empty = False
+    clean_markdown = re.sub(r"\n{3,}", "\n\n", clean_markdown)
 
-    for line in lines:
-        is_empty = line.strip() == ""
+    url_tag = f"Article URL: {url}"
 
-        if is_empty and previous_empty:
-            continue
+    def inject_url_after_heading(match):
+        return f"{match.group(0)}\n{url_tag}\n"
 
-        compact_lines.append(line)
+    content_with_url = re.sub(
+        r"^(#{1,3} .+)$",
+        inject_url_after_heading,
+        clean_markdown.strip(),
+        flags=re.MULTILINE,
+    )
 
-        previous_empty = is_empty
+    final_output = [
+        f"# {title}",
+        url_tag,
+        "",
+        content_with_url,
+        "",
+        url_tag,
+    ]
 
-    markdown = "\n".join(compact_lines)
-
-    return f"""
-# {title}
-
-Article URL: {url}
-
-{markdown}
-""".strip()
+    return "\n".join(final_output)
 
 
 def save_markdown(article):
-    title = article.get("title", "")
     article_id = article.get("id", "")
-    clean_title = re.sub(r"[^a-z0-9\s]", " ", title.lower())
-    slug = "-".join(clean_title.split())
     markdown = article_to_markdown(article)
-    file_path = os.path.join(MARKDOWN_DIR, f"{article_id}-{slug}.md")
-
+    file_path = os.path.join(MARKDOWN_DIR, f"{article_id}.md")
     with open(file_path, "w") as f:
         f.write(markdown)
 

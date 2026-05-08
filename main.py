@@ -52,8 +52,7 @@ def clean_stale_vs_files(vs_id: str):
             try:
                 file_info = client.files.retrieve(vsf.id)
 
-                slug = Path(file_info.filename).stem
-                article_id = slug.split("-")[0]
+                article_id = Path(file_info.filename).stem
 
                 if article_id not in valid_article_ids:
                     client.vector_stores.files.delete(
@@ -93,9 +92,9 @@ def main():
 
 def log_summary(summary):
     logger.info("\n--------------------------- Summary ---------------------------")
-    logger.info(f"New: {summary['new']}")
-    logger.info(f"Updated: {summary['updated']}")
-    logger.info(f"Skipped: {summary['skipped']}")
+    logger.info(f"Articles new:     {summary['new']}")
+    logger.info(f"Articles updated: {summary['updated']}")
+    logger.info(f"Articles skipped: {summary['skipped']}")
     logger.info("--------------------------- Summary ---------------------------\n")
 
 
