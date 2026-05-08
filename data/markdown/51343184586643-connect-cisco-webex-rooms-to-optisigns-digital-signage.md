@@ -1,0 +1,141 @@
+# Connect Cisco Webex Rooms to OptiSigns Digital Signage
+
+Article URL: https://support.optisigns.com/hc/en-us/articles/51343184586643-Connect-Cisco-Webex-Rooms-to-OptiSigns-Digital-Signage
+
+Turn idle Cisco Webex Rooms, Boards, and Desks into digital signage. When the device is in Standby, OptiSigns plays your assigned content — images, videos, dashboards, web apps — and clears it instantly the moment a meeting starts.
+
+This guide walks a Webex Full Administrator through the one-time setup at the organization level, and then per-room signage activation.
+
+---
+
+## What you'll need
+
+* **A Webex account** with the **Full Administrator** role for your organization. Any Webex tier with paired RoomOS devices is supported. *(Required to approve OptiSigns in Webex Control Hub.)*
+* **An OptiSigns account.** [Sign up for a free trial](https://www.optisigns.com/free-trial) — you only pay for rooms you activate signage on.
+* **At least one WebEngine-capable RoomOS device** paired to your Webex org. Supported models include:
++ Cisco Board Pro / Board Pro G2
++ Cisco Desk Pro / Desk Mini
++ Cisco Codec Pro / Codec EQ
++ Cisco Room Bar Pro
++ Cisco Room Kit EQX
+
+> Older devices (Codec Plus, Room Kit Mini, original Board) do not support WebEngine and cannot run OptiSigns content. [Check WebEngine compatibility on the Cisco support site →](https://help.webex.com/article/n7v7gxq)
+
+---
+
+## How OptiSigns works on Webex devices
+
+OptiSigns uses the **Webex Digital Signage / Standby** feature built into RoomOS. We do not install an app on the device — instead, we set the device's signage URL via Webex's official API. Your content plays through the WebEngine browser only when the room is idle, and the device automatically returns to its normal meeting UI on any incoming call, scheduled meeting, or wake-on-presence.
+
+There is no impact on meeting quality, screen-sharing, or Webex Assistant features.
+
+---
+
+## Step 1 — Sign in to OptiSigns
+
+Go to [**app.optisigns.com**](https://app.optisigns.com/) and sign in (or create your account).
+
+---
+
+## Step 2 — Open the Connect page
+
+In the left navigation, click **Connect** → **Cisco Webex Rooms**.
+
+You'll see the Webex onboarding card. Click **Connect Webex**.
+
+---
+
+## Step 3 — Approve OptiSigns in Webex Control Hub
+
+A new browser tab opens at **admin.webex.com**, prompting you to approve the **OptiSigns Digital Signage** Service App for your organization.
+
+Review the requested permissions:
+
+* **Read devices** — to list your paired Webex Rooms / Boards / Desks
+* **Write device configurations** — to push the signage URL and Standby settings
+* **Read organization & workspace info** — to display friendly room names in OptiSigns
+
+Click **Authorize**. You must be signed in as a **Full Administrator** for this step to succeed.
+
+> ⚠️ If you see "You don't have permission to authorize this app," ask your Webex admin to either approve OptiSigns for the org or grant you the Full Administrator role.
+
+---
+
+## Step 4 — Verify the connection in OptiSigns
+
+Return to the OptiSigns tab. Click **Verify Connection**.
+
+Within ~15 seconds your Webex rooms appear in the device list, alongside any Android, ChromeOS, or Linux signage devices on your account.
+
+---
+
+## Step 5 — Activate signage on a room
+
+By default, rooms are listed but **not activated**. Activation is per-room billing — you pay only for rooms with signage turned on.
+
+1. Click any Webex room in the list to open its detail drawer.
+2. Click **Activate Signage License**.
+3. Confirm — your subscription updates immediately.
+
+---
+
+## Step 6 — Push content
+
+With the room activated, you can now assign content like any other OptiSigns screen:
+
+1. From the room drawer, click **Push Content**.
+2. Pick an asset, playlist, or schedule.
+3. Click **Push**.
+
+Walk to the device. Within 10–30 seconds, your content appears during Standby. Try a test call — content should clear instantly when the call connects.
+
+---
+
+## Configure signage behavior (optional)
+
+In the room drawer, the **Webex Settings** card lets you tune:
+
+| Setting | What it does | Recommended |
+| --- | --- | --- |
+| **Interaction Mode** | Whether touch on Board/Desk wakes the device or interacts with content | `NoInteraction` for lobby/info screens, `InteractionAllowed` for kiosk-style content |
+| **Refresh Interval** | How often the device reloads the signage URL | 30 minutes (default) |
+| **Audio** | Whether videos play with sound | Off (default) |
+
+Changes apply within ~10 seconds via Webex's API.
+
+---
+
+## Disconnecting OptiSigns
+
+To remove OptiSigns from your Webex organization:
+
+**From OptiSigns:** Connect page → Cisco Webex Rooms → **Disconnect**. This stops content delivery and removes the signage URL from all paired devices.
+
+**From Webex Control Hub:** Apps & Integrations → OptiSigns Digital Signage → **Remove**. This revokes our access token. Use this if you want to fully de-authorize the integration.
+
+---
+
+## Troubleshooting
+
+**My rooms don't appear after Verify Connection.** Wait 30 seconds and refresh — initial inventory sync can take up to a minute on large orgs. If still empty, confirm you have at least one paired device on a WebEngine-capable model (see "What you'll need" above).
+
+**Content shows but doesn't clear when a meeting starts.** This usually means Standby is disabled on the device. In Control Hub, open the device → Configurations → search "Standby" → ensure `Standby Control = On`.
+
+**Content looks zoomed-in or cropped.** Webex Boards run at 1080p; Desks run at 1920×1080 portrait or landscape depending on orientation. Use OptiSigns' built-in resolution settings on the asset, or design content at 1920×1080 for safe rendering across all devices.
+
+**I get "Authorization failed" in Control Hub.** You're not signed in as a Full Administrator. Ask your Webex admin to either approve OptiSigns at the org level or grant your account the Full Administrator role.
+
+**A specific device shows "WebEngine not enabled."** Open the device in Control Hub → Configurations → set `WebEngine.Mode = On`. OptiSigns will retry automatically.
+
+---
+
+## Pricing
+
+OptiSigns Webex Rooms integration use license just like any screens in OptiSigns. Free trial available — you're only billed once you activate signage on a room. [See full pricing →](https://www.optisigns.com/pricing)
+
+---
+
+## Need help?
+
+* 📧 Email: [support@optisigns.com](mailto:support@optisigns.com)
+* 📚 More guides: [support.optisigns.com](https://support.optisigns.com/)
