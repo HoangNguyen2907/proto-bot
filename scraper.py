@@ -1,7 +1,9 @@
 import os
 import re
-import requests
 import json
+from pathlib import Path
+
+import requests
 import logging
 
 from markdownify import markdownify as md
@@ -104,27 +106,33 @@ def save_markdown(article):
     return file_path
 
 
-def load_articles():
+def load_articles() -> tuple[list[Path], dict[str, int]]:
     articles = fetch_articles()
     state = load_state()
-    new_articles = []
-    updated_articles = []
-    skipped_articles = []
+    uploadPaths: list[Path] = []
+    summary = {
+        "new": 0,
+        "updated": 0,
+        "skipped": 0,
+    }
 
     for article in articles:
         article_id = str(article.get("id", ""))
         edited_at = article.get("edited_at", "")
         if article_id not in state:
-            new_articles.append(article)
-            save_markdown(article)
+            path = save_markdown(article)
+            uploadPaths.append(path)
             state[article_id] = {
                 "edited_at": edited_at,
             }
+            summary["new"] += 1
         elif state[article_id]["edited_at"] != edited_at:
-            updated_articles.append(article)
-            save_markdown(article)
+            path = save_markdown(article)
+            uploadPaths.append(path)
             state[article_id] = {"edited_at": edited_at}
+            summary["updated"] += 1
         else:
-            skipped_articles.append(article)
+            summary["skipped"] += 1
+
     save_state(state)
-    return new_articles, updated_articles, skipped_articles
+    return uploadPaths, summary
