@@ -131,7 +131,8 @@ def save_markdown(article):
 
 def load_articles() -> tuple[list[Path], dict[str, int]]:
     articles = fetch_articles()
-    state = load_state()
+    oldState = load_state()
+    newState = {}
     uploadPaths: list[Path] = []
     summary = {
         "new": 0,
@@ -142,20 +143,21 @@ def load_articles() -> tuple[list[Path], dict[str, int]]:
     for article in articles:
         article_id = str(article.get("id", ""))
         edited_at = article.get("edited_at", "")
-        if article_id not in state:
+        if article_id not in oldState:
             path = save_markdown(article)
             uploadPaths.append(path)
-            state[article_id] = {
+            newState[article_id] = {
                 "edited_at": edited_at,
             }
             summary["new"] += 1
-        elif state[article_id]["edited_at"] != edited_at:
+        elif oldState[article_id]["edited_at"] != edited_at:
             path = save_markdown(article)
             uploadPaths.append(path)
-            state[article_id] = {"edited_at": edited_at}
+            newState[article_id] = {"edited_at": edited_at}
             summary["updated"] += 1
         else:
             summary["skipped"] += 1
+            newState[article_id] = oldState[article_id]
 
-    save_state(state)
+    save_state(newState)
     return uploadPaths, summary

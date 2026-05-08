@@ -1,9 +1,5 @@
 # proto-bot
 
-A pipeline that scrapes the OptiSigns Help Center, converts articles to Markdown, and uploads them into an OpenAI Vector Store for use with the Assistants API.
-
----
-
 ## Setup
 
 ```bash
@@ -31,6 +27,17 @@ APP_ENV=local python main.py
 
 ---
 
+---
+
+## Docker Setup
+
+```bash
+docker build -t proto-bot .
+docker run -it --env-file .env.local proto-bot
+```
+
+---
+
 ## Chunking Strategy
 
 ```python
@@ -49,13 +56,13 @@ Support articles are highly structured, with each section averaging 200–400 to
 
 ## Daily Job Logs
 
-DigitalOcean App Platform → Jobs → Runtime Logs
+![Daily Job 1](images/daily_job1.png)
 
+![Daily Job 2](images/daily_job2.png)
 ---
 
 ## Playground Screenshot
 
-```text
-images/bot_answer_1.png
-images/bot_answer_2.png
-```
+![Bot Answer 1](images/bot_answer1.png)
+
+![Bot Answer 2](images/bot_answer2.png)
